@@ -1,0 +1,9 @@
+-r ./base.txt  # includes the base.txt requirements file
+
+# Testing
+mypy==0.812
+pytest==6.2.3
+pytest-sugar==0.9.4
+pytest-django==4.2.0
+coverage==5.5
+factory-boy==3.2.0

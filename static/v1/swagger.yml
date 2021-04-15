@@ -1,0 +1,658 @@
+openapi: 3.0.0
+
+info:
+  title: Elenas Tasks
+  description: This is the endpoints documentation for elenas® senior backend test
+  version: '0.0.1'
+
+servers:
+  - url: "/api/v1/elenas/"
+
+paths:
+  /healthcheck/:
+    get:
+      tags:
+        - API Status
+      summary: 'Check server status'
+      description: 'Check server status'
+      responses:
+        '200':
+          description: 'Server online'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthCheckSchema'
+        'Other':
+          description: 'Server offline'
+  /auth/:
+    post:
+      tags:
+        - Auth
+      summary: Get user access token
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccessTokenSchema'
+      responses:
+        '200':
+          description: Valid username and password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponseSchema'
+        '400':
+          description: Bad Request, username not exists or invalid password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestAuthResponseSchema'
+  /tags/:
+    get:
+      tags:
+        - Tags
+      summary: Get tag list of auth user
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: Name of tag to filter
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              example:
+                {
+                  "count": 9,
+                  "next": "http://localhost:8000/api/v1/tasks/tags/?limit=5&offset=5",
+                  "previous": null,
+                  "results": [
+                    {
+                      "id": "a2ec10e4-ec99-4a31-9cb6-26032504222e",
+                      "name": "QA",
+                      "created_at": "2021-04-14T23:28:25.658407Z",
+                      "updated_at": "2021-04-14T23:28:25.658407Z"
+                    },
+                    {
+                      "id": "3c62c93b-f04d-4596-b8b9-f34270a9425a",
+                      "name": "BACKEND",
+                      "created_at": "2021-04-14T23:28:24.879436Z",
+                      "updated_at": "2021-04-14T23:28:24.879436Z"
+                    },
+                    {
+                      "id": "b054dca1-3674-4b8c-bb65-a31ef9208855",
+                      "name": "DEVOPS",
+                      "created_at": "2021-04-14T23:28:24.266031Z",
+                      "updated_at": "2021-04-14T23:28:24.266031Z"
+                    },
+                    {
+                      "id": "f149a2d8-da80-4dc3-8f3b-9a62a2f4894e",
+                      "name": "PRODUCT",
+                      "created_at": "2021-04-14T23:28:23.696257Z",
+                      "updated_at": "2021-04-14T23:28:23.696257Z"
+                    },
+                    {
+                      "id": "750bab32-10dc-4caa-8af4-002b229d07f1",
+                      "name": "ORIGINATION",
+                      "created_at": "2021-04-14T23:28:23.182418Z",
+                      "updated_at": "2021-04-14T23:28:23.182418Z"
+                    }
+                  ]
+                }
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedResponseSchema'
+    post:
+      tags:
+        - Tags
+      summary: Create tag to auth user
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTagSchema'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagSchema'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestTagSchema'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedResponseSchema'
+  /tags/{tag_id}/:
+    get:
+      tags:
+        - Tag Detail
+      summary: Retrieve tag
+      parameters:
+        - name: tag_id
+          in: path
+          description: ''
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Retrive tag
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagSchema'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundSchema'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedResponseSchema'
+    put:
+      tags:
+        - Tag Detail
+      summary: Update tag name
+      parameters:
+        - name: tag_id
+          in: path
+          description: ''
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTagSchema'
+      responses:
+        '200':
+          description: Updated tag
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TagSchema'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundSchema'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedResponseSchema'
+    delete:
+      tags:
+        - Tag Detail
+      summary: Delete tag
+      parameters:
+        - name: tag_id
+          in: path
+          description: ''
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletedSchema'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundSchema'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedResponseSchema'
+  /tasks/:
+    get:
+      tags:
+        - Tasks
+      summary: Get tasks list of auth user
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: Name of task
+        - in: query
+          name: description
+          schema:
+            type: string
+          description: Description of task
+        - in: query
+          name: priority
+          schema:
+            type: string
+          description: Priority of task
+        - in: query
+          name: is_completed
+          schema:
+            type: boolean
+          description: Status of task
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              example:
+                {
+                  "count": 8,
+                  "next": "http://localhost:8000/api/v1/tasks/?limit=5&offset=5",
+                  "previous": null,
+                  "results": [
+                    {
+                      "id": "51cd7e0f-e9aa-441b-97fa-958d7a10413e",
+                      "name": "Task name",
+                      "tags": [
+                          "3d98e7ff-e2c5-4cfb-b568-a77b35647889"
+                      ],
+                      "description": "Description test",
+                      "priority": "LOW",
+                      "is_completed": false,
+                      "created_at": "2021-04-15T18:32:39.528067Z",
+                      "updated_at": "2021-04-15T18:32:39.528067Z"
+                    },
+                    {
+                      "id": "4debabb5-7290-4261-9aef-df28c96d18a5",
+                      "name": "Task name",
+                      "tags": [
+                          "3d98e7ff-e2c5-4cfb-b568-a77b35647889"
+                      ],
+                      "description": "Description test",
+                      "priority": "LOW",
+                      "is_completed": false,
+                      "created_at": "2021-04-15T18:32:27.247918Z",
+                      "updated_at": "2021-04-15T18:32:27.247918Z"
+                    },
+                    {
+                      "id": "2efc3fbd-b15d-48e9-9f54-245c95879a8f",
+                      "name": "Task name",
+                      "tags": [
+                          "3d98e7ff-e2c5-4cfb-b568-a77b35647889"
+                      ],
+                      "description": "Description test",
+                      "priority": "LOW",
+                      "is_completed": false,
+                      "created_at": "2021-04-15T18:31:08.083292Z",
+                      "updated_at": "2021-04-15T18:31:08.083292Z"
+                    },
+                    {
+                      "id": "afab4c43-4852-4b54-a74d-a8aa17fcd697",
+                      "name": "Task name",
+                      "tags": [ ],
+                      "description": "Description test",
+                      "priority": "LOW",
+                      "is_completed": false,
+                      "created_at": "2021-04-15T18:30:59.000020Z",
+                      "updated_at": "2021-04-15T18:30:59.000020Z"
+                    },
+                    {
+                      "id": "aa5d9357-510d-4692-afd1-d9a5aa8a6f6d",
+                      "name": "Task name",
+                      "tags": [ ],
+                      "description": "Description test",
+                      "priority": "LOW",
+                      "is_completed": false,
+                      "created_at": "2021-04-15T18:27:30.538911Z",
+                      "updated_at": "2021-04-15T18:27:30.538911Z"
+                    }
+                  ]
+                }
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedResponseSchema'
+    post:
+      tags:
+        - Tasks
+      summary: Create task to auth user
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskSchema'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskSchema'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadRequestTaskSchema'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedResponseSchema'
+  /tasks/{task_id}/:
+    get:
+      tags:
+        - Task Detail
+      summary: Retrieve task
+      parameters:
+        - name: task_id
+          in: path
+          description: ''
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Retrive tag
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskSchema'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundSchema'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedResponseSchema'
+    put:
+      tags:
+        - Task Detail
+      summary: Update task
+      parameters:
+        - name: task_id
+          in: path
+          description: ''
+          required: true
+          style: simple
+          schema:
+            type: string
+      requestBody:
+        description: ''
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskSchema'
+      responses:
+        '200':
+          description: Updated task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskSchema'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundSchema'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedResponseSchema'
+    delete:
+      tags:
+        - Task Detail
+      summary: Delete task
+      parameters:
+        - name: task_id
+          in: path
+          description: ''
+          required: true
+          style: simple
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletedSchema'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundSchema'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedResponseSchema'
+components:
+  schemas:
+    NotFoundSchema:
+      title: Not Found
+      type: object
+      properties:
+        detail:
+          type: string
+      example:
+        detail: [ "Not found." ]
+    UnauthorizedResponseSchema:
+      title: Unauthorized Response
+      type: object
+      properties:
+        detail:
+          type: string
+      example:
+        detail: Authentication credentials were not provided.
+    HealthCheckSchema:
+      title: Health Check
+      required:
+        - message
+      type: object
+      properties:
+        message:
+          type: string
+      example:
+        message: It's Working
+    BadRequestAuthResponseSchema:
+      title: Error Auth Response
+      required:
+        - non_field_errors
+      type: object
+      properties:
+        non_field_errors:
+          type: string
+      example:
+        non_field_errors: ["Unable to log in with provided credentials."]
+    AccessTokenSchema:
+      title: Access Token
+      required:
+        - username
+        - password
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+      example:
+        username: admin
+        password: admin
+    TokenResponseSchema:
+      title: Token Response
+      type: object
+      properties:
+        token:
+          type: string
+      example:
+        token: 3888fb7abeeae8671120ce854214be2081011fc0
+    DeletedSchema:
+      title: Deleted
+      type: object
+      properties:
+        status:
+          type: string
+      example:
+        status: "deleted"
+    CreateTagSchema:
+      title: Create Tag
+      type: object
+      properties:
+        name:
+          type: string
+      example:
+        name: "Tag Test"
+    TagSchema:
+      title: Tag
+      type: object
+      properties:
+        id:
+          type: uuid
+        name:
+          type: string
+        created_at:
+          type: date-time
+        updated_at:
+          type: date-time
+      example:
+        id: "dcdea20f-ac7e-49da-ad2b-52343116accc"
+        name: "Tag Test"
+        created_at: "2021-04-14T21:57:17.868634Z"
+        updated_at: "2021-04-14T21:57:17.868634Z"
+    TaskSchema:
+      title: Task
+      type: object
+      properties:
+        id:
+          type: uuid
+        name:
+          type: string
+        tags:
+          type: array
+        description:
+          type: string
+        priority:
+          type: string
+        is_completed:
+          type: boolean
+        created_at:
+          type: date-time
+        updated_at:
+          type: date-time
+      example:
+        {
+          "id": "51cd7e0f-e9aa-441b-97fa-958d7a10413e",
+          "name": "Task name",
+          "tags": [
+              "3d98e7ff-e2c5-4cfb-b568-a77b35647889"
+          ],
+          "description": "Description test",
+          "priority": "LOW",
+          "is_completed": false,
+          "created_at": "2021-04-15T18:32:39.528067Z",
+          "updated_at": "2021-04-15T18:32:39.528067Z"
+        }
+    CreateTaskSchema:
+      title: Create Task
+      required:
+        - name
+        - description
+        - priority
+      type: object
+      properties:
+        name:
+          type: string
+        tags:
+          type: array
+        description:
+          type: string
+        priority:
+          type: string
+        is_completed:
+          type: boolean
+      example:
+        name: Task name
+        tags: []
+        description: Description test
+        priority: LOW
+    BadRequestTaskSchema:
+      title: Bad Request Task
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        priority:
+          type: string
+      example:
+        name: ["This field is required."]
+        description: ["This field is required."]
+        priority: ["This field is required."]
+    BadRequestTagSchema:
+      title: Bad Request Tag
+      type: object
+      properties:
+        name:
+          type: string
+      example:
+        name: [ "This field is required." ]
+  securitySchemes:
+    httpBearer:
+      type: http
+      scheme: bearer
+security:
+  - httpBearer: []
+tags:
+  - name: API Status
+  - name: Auth
+  - name: Tags
+  - name: Tag Detail
+  - name: Tasks
+  - name: Task Detail

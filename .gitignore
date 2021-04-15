@@ -1,0 +1,8 @@
+.idea/
+.venv/
+envs/local/.env.db
+envs/local/.env.app
+envs/production/.env.db
+envs/production/.env.app
+*.pyc
+.coverage
