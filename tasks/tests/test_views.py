@@ -9,7 +9,9 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 
-from .factories.users import UserFactory, TagFactory, TaskFactory
+from .factories.tags import TagFactory
+from .factories.tasks import TaskFactory
+from .factories.users import UserFactory
 
 
 class TestTagsViews(TestCase):
@@ -255,11 +257,11 @@ class TestTasksViews(TestCase):
     def get_url_with_pk(name: str, pk: str):
         return reverse(name, kwargs={"pk": pk})
 
-    def check_asserts_query_params(self, user, query_param: str, query_param_value: str, response_len: int):
+    def check_asserts_query_params(self, token, query_param: str, query_param_value: str, response_len: int):
 
         user_filter_list_response = self.client.get(
             path=f"{self.TASKS_API_URL}?{query_param}={query_param_value}",
-            HTTP_AUTHORIZATION=self.get_http_authorization(self.token_user_1)
+            HTTP_AUTHORIZATION=self.get_http_authorization(token)
         ).data.get("results")
         self.assertEquals(user_filter_list_response.__len__(), response_len)
 
@@ -344,16 +346,16 @@ class TestTasksViews(TestCase):
         self.assertEquals(user_1_tags_list.__len__(), 2)
 
         self.check_asserts_query_params(
-            user=self.user_1, query_param="name", query_param_value="Name_1", response_len=1
+            token=self.token_user_1, query_param="name", query_param_value="Name_1", response_len=1
         )
         self.check_asserts_query_params(
-            user=self.user_1, query_param="description", query_param_value="description_2", response_len=1
+            token=self.token_user_1, query_param="description", query_param_value="description_2", response_len=1
         )
         self.check_asserts_query_params(
-            user=self.user_1, query_param="priority", query_param_value="LOW", response_len=1
+            token=self.token_user_1, query_param="priority", query_param_value="LOW", response_len=1
         )
         self.check_asserts_query_params(
-            user=self.user_1, query_param="is_completed", query_param_value="false", response_len=2
+            token=self.token_user_1, query_param="is_completed", query_param_value="false", response_len=2
         )
 
     def test_retrieve_task(self):

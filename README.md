@@ -34,3 +34,6 @@
   ```sh
   docker exec -it django_app python manage.py createsuperuser
   ```
+
+## Production deployment
+To test this project please visit [https://www.dandresfsoto.com/](https://www.dandresfsoto.com/)

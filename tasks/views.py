@@ -1,16 +1,17 @@
-from rest_framework import mixins
 from rest_framework import generics
-from .serializers import (
-    TasksSerializer,
-    TagsSerializer
-)
+from rest_framework import mixins
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
 from .models import (
     Tag,
     Task
 )
-from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
-from rest_framework.response import Response
+from .serializers import (
+    TasksSerializer,
+    TagsSerializer
+)
 
 
 class TagsAPIView(mixins.ListModelMixin,
